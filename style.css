@@ -1,0 +1,188 @@
+body {
+    background-color: #121212;
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+}
+
+.container {
+    background: #1e1e1e;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    width: 350px;
+    text-align: center;
+}
+
+input {
+    padding: 10px;
+    width: 80%;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    padding: 10px 20px;
+    background: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover { background: #ff6b81; }
+
+#role-display {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    font-weight: bold;
+    color: #eccc68;
+}
+
+#role-card {
+    border: 2px dashed #444;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    background: #2a2a2a;
+    transition: all 0.3s ease;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.cat-card {
+    background: #333;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+.cat-card.selected {
+    border-color: #ff4757;
+    background: #442222;
+}
+.hidden-card { border: 2px solid #555; padding: 15px; border-radius: 10px; }
+
+#voting-area {
+    display: none; /* Se activa por JS */
+    background-color: #2c3e50 !important;
+    border: 3px solid #f1c40f !important;
+    padding: 20px !important;
+    margin-top: 20px !important;
+    border-radius: 15px !important;
+    z-index: 9999;
+    position: relative;
+}
+
+#voting-buttons button {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    transition: transform 0.2s;
+}
+
+#voting-buttons button:hover {
+    transform: scale(1.1);
+    background-color: #f1c40f;
+}
+
+/* Contenedores generales */
+.section-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #888;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+/* Rejilla de Categorías */
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.cat-card {
+    background: #2a2a2a;
+    border: 2px solid #3d3d3d;
+    padding: 15px;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+}
+
+.cat-card:hover {
+    background: #333;
+    transform: translateY(-3px);
+}
+
+.cat-card.selected {
+    background: #442222;
+    border-color: #ff4757;
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.3);
+    color: white;
+}
+
+/* Selector de Tiempo */
+.time-options {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.time-btn {
+    flex: 1;
+    background: #2a2a2a;
+    border: 2px solid #3d3d3d;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.time-btn.selected {
+    background: #ff4757;
+    border-color: #ff4757;
+    box-shadow: 0 4px 10px rgba(255, 71, 87, 0.4);
+    font-weight: bold;
+}
+
+/* Botón de Inicio */
+.btn-primary-start {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(255, 71, 87, 0.2);
+    transition: transform 0.2s;
+}
+
+.btn-primary-start:active {
+    transform: scale(0.95);
+}
+
+.btn-primary-start:disabled {
+    filter: grayscale(1);
+    opacity: 0.5;
+}

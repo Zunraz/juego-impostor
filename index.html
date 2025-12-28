@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impostor P2P</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🕵️ Impostor P2P</h1>
+        
+        <div id="setup">
+            <input type="text" id="player-name" placeholder="Tu Nombre">
+            <div id="db-status">Cargando palabras...</div>
+            <hr>
+            <p>Host:</p>
+            <input type="text" id="custom-id" placeholder="ID de sala">
+            <button id="btn-crear" onclick="crearSala()" disabled>Crear Sala</button>
+            <p>Invitado:</p>
+            <input type="text" id="join-id" placeholder="ID del Host">
+            <button id="btn-unirse" onclick="conectarAHost()" disabled>Unirse</button>
+        </div>
+
+        <div id="game-area" style="display:none;">
+            <div class="header-info">
+                Sala: <strong id="room-id">--</strong> | Jugador: <strong id="display-mi-nombre">--</strong>
+            </div>
+
+            <div id="status">Esperando inicio...</div>
+
+            <div id="host-controls" style="display:none; margin: 20px 0;">
+                <p class="section-title">📦 Selecciona Categorías</p>
+                <div id="category-grid" class="category-grid">
+                    </div>
+
+                <div class="time-selector-container">
+                    <p class="section-title">⏱️ Tiempo de Discusión</p>
+                    <div class="time-options">
+                        <button type="button" class="time-btn" data-value="60">1 min</button>
+                        <button type="button" class="time-btn selected" data-value="180">3 min</button>
+                        <button type="button" class="time-btn" data-value="300">5 min</button>
+                    </div>
+                    <input type="hidden" id="game-time" value="180">
+                </div>
+
+                <button id="btn-repartir" class="btn-primary-start" onclick="iniciarJuego()">
+                    🚀 REPARTIR ROLES
+                </button>
+            </div>
+
+            <div id="timer-display" style="font-size: 2.5rem; color: #ff4757; display:none; margin: 15px 0;">00:00</div>
+
+            <div id="role-card" class="hidden-card">
+                <div id="role-display">Esperando rol...</div>
+            </div>
+
+            <div id="voting-area" style="display:none; background: #222; padding: 20px; border: 2px solid white; margin: 20px 0;">
+                <h3 style="color: gold;">🗳️ ¡VOTA AL IMPOSTOR!</h3>
+                <div id="voting-buttons"></div>
+            </div>
+
+            <div id="game-results" style="display:none; background: #000; padding: 20px; border: 2px solid #ff4757;">
+                <h2 id="winner-text"></h2>
+                <p id="impostor-was"></p>
+                <button onclick="location.reload()">Nueva Partida</button>
+            </div>
+
+            <hr>
+            <h3>Jugadores:</h3>
+            <ul id="player-list"></ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
