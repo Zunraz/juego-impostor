@@ -141,18 +141,25 @@ function iniciarJuego() {
 function iniciarCronometro(segundos) {
     timerDisplay.style.display = 'block';
     votingArea.style.display = 'none';
-    let r = segundos;
+    
+    // Calculamos el momento EXACTO en el que debe terminar (Ahora + segundos)
+    const tiempoFinal = Date.now() + (segundos * 1000);
+
     const interval = setInterval(() => {
-        const m = Math.floor(r / 60);
-        const s = r % 60;
-        timerDisplay.innerText = `${m}:${s.toString().padStart(2, '0')}`;
-        if (r <= 0) { 
+        const ahora = Date.now();
+        const restanteMs = tiempoFinal - ahora;
+        const restanteSegs = Math.ceil(restanteMs / 1000);
+
+        if (restanteSegs <= 0) { 
             clearInterval(interval); 
-            timerDisplay.innerText = "¡A VOTAR!";
+            timerDisplay.innerText = "¡TIEMPO AGOTADO!";
             abrirVotacion(); 
+        } else {
+            const m = Math.floor(restanteSegs / 60);
+            const s = restanteSegs % 60;
+            timerDisplay.innerText = `${m}:${s.toString().padStart(2, '0')}`;
         }
-        r--;
-    }, 1000);
+    }, 100); // Revisa cada 100ms para que sea súper preciso
 }
 
 function abrirVotacion() {
@@ -199,13 +206,22 @@ function mostrarResultado(data) {
     if (data.ganador === "INOCENTES") {
         txt.innerText = "¡VICTORIA DE LOS INOCENTES!";
         txt.style.color = "#2ed573";
+        
+        // --- LANZAR CONFETI ---
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#2ed573', '#ffffff', '#7bed9f']
+        });
+        // ----------------------
+
     } else {
         txt.innerText = "¡VICTORIA DEL IMPOSTOR!";
         txt.style.color = "#ff4757";
     }
-    document.getElementById('impostor-was').innerText = `El impostor era ${data.impostor}. El pueblo acusó a ${data.acusado}.`;
+    document.getElementById('impostor-was').innerText = `El impostor era ${data.impostor}. Se acusó a ${data.acusado}.`;
 
-    // SOLO EL HOST VE EL BOTÓN DE NUEVA PARTIDA
     const btnNueva = resDiv.querySelector('button');
     if (esHost) {
         btnNueva.style.display = "block";
@@ -236,6 +252,11 @@ function limpiarInterfaz() {
 }
 
 function configurarPantallaJuego(id) {
+    if ('wakeLock' in navigator) {
+        navigator.wakeLock.request('screen').catch((err) => {
+            console.log("No se pudo bloquear el apagado de pantalla");
+        });
+    }
     setupDiv.style.display = 'none';
     gameArea.style.display = 'block';
     document.getElementById('room-id').innerText = id;
@@ -282,4 +303,5 @@ function toggleCategory(cat, el) {
         categoriasSeleccionadas.push(cat);
         el.classList.add('selected');
     }
+
 }
