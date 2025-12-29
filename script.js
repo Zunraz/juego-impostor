@@ -12,6 +12,19 @@ let votosRecibidos = 0;
 let conteoVotos = {};
 let listaNombresGlobal = [];
 
+// --- CONFIGURACIÓN PARA CONEXIÓN GLOBAL (STUN SERVERS) ---
+const peerConfig = {
+    config: {
+        'iceServers': [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' },
+            { urls: 'stun:stun3.l.google.com:19302' },
+            { urls: 'stun:stun4.l.google.com:19302' }
+        ]
+    }
+};
+
 const setupDiv = document.getElementById('setup');
 const gameArea = document.getElementById('game-area');
 const playerListDisplay = document.getElementById('player-list');
@@ -40,9 +53,11 @@ cargarBaseDeDatos();
 function toggleCategory(cat, el) {
     if (categoriasSeleccionadas.includes(cat)) {
         categoriasSeleccionadas = categoriasSeleccionadas.filter(c => c !== cat);
+        el.classList.remove('selected');
         el.style.backgroundColor = "";
     } else {
         categoriasSeleccionadas.push(cat);
+        el.classList.add('selected');
         el.style.backgroundColor = "#442222";
     }
 }
@@ -51,7 +66,9 @@ function toggleCategory(cat, el) {
 function crearSala() {
     const salaId = document.getElementById('custom-id').value.trim().toLowerCase();
     miNombre = document.getElementById('player-name').value.trim() || "Anfitrión";
-    peer = new Peer(salaId);
+    
+    // Se añade peerConfig para permitir conexiones externas
+    peer = new Peer(salaId, peerConfig);
 
     peer.on('open', (id) => {
         esHost = true;
@@ -70,18 +87,24 @@ function crearSala() {
             if (data.tipo === 'VOTO_EMITIDO' && esHost) {
                 registrarVoto(data.votoA);
             }
-            // Los invitados pueden pedir reset (opcional, pero el host manda)
         });
+    });
+
+    peer.on('error', (err) => {
+        alert("Error de conexión: " + err.type);
+        console.error(err);
     });
 }
 
 function conectarAHost() {
     const salaId = document.getElementById('join-id').value.trim().toLowerCase();
     miNombre = document.getElementById('player-name').value.trim() || "Invitado";
-    peer = new Peer(); 
+    
+    // Se añade peerConfig aquí también
+    peer = new Peer(undefined, peerConfig); 
 
     peer.on('open', () => {
-        conn = peer.connect(salaId); 
+        conn = peer.connect(salaId, { reliable: true }); 
         conn.on('open', () => {
             conn.send({ tipo: 'UNIRSE', nombre: miNombre });
             configurarPantallaJuego(salaId);
@@ -101,6 +124,10 @@ function conectarAHost() {
             if (data.tipo === 'RESULTADO_FINAL') mostrarResultado(data);
             if (data.tipo === 'RESET_TABLERO') limpiarInterfaz();
         });
+    });
+
+    peer.on('error', (err) => {
+        alert("No se pudo conectar a la sala: " + err.type);
     });
 }
 
@@ -141,8 +168,6 @@ function iniciarJuego() {
 function iniciarCronometro(segundos) {
     timerDisplay.style.display = 'block';
     votingArea.style.display = 'none';
-    
-    // Calculamos el momento EXACTO en el que debe terminar (Ahora + segundos)
     const tiempoFinal = Date.now() + (segundos * 1000);
 
     const interval = setInterval(() => {
@@ -159,7 +184,7 @@ function iniciarCronometro(segundos) {
             const s = restanteSegs % 60;
             timerDisplay.innerText = `${m}:${s.toString().padStart(2, '0')}`;
         }
-    }, 100); // Revisa cada 100ms para que sea súper preciso
+    }, 100);
 }
 
 function abrirVotacion() {
@@ -206,16 +231,12 @@ function mostrarResultado(data) {
     if (data.ganador === "INOCENTES") {
         txt.innerText = "¡VICTORIA DE LOS INOCENTES!";
         txt.style.color = "#2ed573";
-        
-        // --- LANZAR CONFETI ---
         confetti({
             particleCount: 150,
             spread: 70,
             origin: { y: 0.6 },
             colors: ['#2ed573', '#ffffff', '#7bed9f']
         });
-        // ----------------------
-
     } else {
         txt.innerText = "¡VICTORIA DEL IMPOSTOR!";
         txt.style.color = "#ff4757";
@@ -232,14 +253,11 @@ function mostrarResultado(data) {
     }
 }
 
-// Función que ejecuta el Host para empezar de nuevo
 function reiniciarPartidaHost() {
     limpiarInterfaz();
-    // Avisar a todos los invitados que limpien su pantalla
     conexiones.forEach(c => c.send({ tipo: 'RESET_TABLERO' }));
 }
 
-// Función común para limpiar la UI sin recargar página
 function limpiarInterfaz() {
     document.getElementById('game-results').style.display = 'none';
     votingArea.style.display = 'none';
@@ -253,9 +271,7 @@ function limpiarInterfaz() {
 
 function configurarPantallaJuego(id) {
     if ('wakeLock' in navigator) {
-        navigator.wakeLock.request('screen').catch((err) => {
-            console.log("No se pudo bloquear el apagado de pantalla");
-        });
+        navigator.wakeLock.request('screen').catch(() => {});
     }
     setupDiv.style.display = 'none';
     gameArea.style.display = 'block';
@@ -282,26 +298,10 @@ function mostrarRol(rol, palabra) {
     }
 }
 
-// Lógica para los botones de tiempo
 document.addEventListener('click', function(e) {
     if (e.target.classList.contains('time-btn')) {
-        // Deseleccionar todos
         document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('selected'));
-        // Seleccionar el actual
         e.target.classList.add('selected');
-        // Actualizar el valor oculto
         document.getElementById('game-time').value = e.target.dataset.value;
     }
 });
-
-// Modifica la función toggleCategory para que sea más limpia visualmente
-function toggleCategory(cat, el) {
-    if (categoriasSeleccionadas.includes(cat)) {
-        categoriasSeleccionadas = categoriasSeleccionadas.filter(c => c !== cat);
-        el.classList.remove('selected');
-    } else {
-        categoriasSeleccionadas.push(cat);
-        el.classList.add('selected');
-    }
-
-}
