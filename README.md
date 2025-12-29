@@ -2,7 +2,7 @@
 
 ¡Bienvenido a **Impostor P2P**! Un juego de mesa social de deducción y mentiras, inspirado en clásicos como "The Spyfall", pero diseñado para funcionar completamente en el navegador sin necesidad de un servidor centralizado, utilizando tecnología Peer-to-Peer.
 
-🚀 **[VER DEMO EN VIVO](TU_LINK_DE_GITHUB_PAGES_AQUI)**
+🚀 **[VER DEMO EN VIVO](https://zunraz.github.io/juego-impostor/)**
 
 ## 🌟 Características principales
 - **Conectividad Global:** Gracias a la integración de servidores STUN, jugadores de cualquier parte del mundo pueden unirse a la misma sala a través de Internet.
