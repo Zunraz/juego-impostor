@@ -36,4 +36,4 @@
 - `palabras.json`: Diccionario extendido de términos.
 
 ---
-Desarrollado con ❤️ por [Tu Nombre/Usuario de GitHub]
+Desarrollado con ❤️ por Zunraz
